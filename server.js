@@ -151,22 +151,23 @@ app.get('/incorrect', requireAuth, (req, res) => {
 
 
 app.post('/register', async (req, res) => {
-    const { email, password, first_name, last_name, contact_no } = req.body;
+
+    let { email, password, first_name, last_name, contact_no } = req.body;
+    // Trim email and password
+    email = email.trim();
+    password = password.trim();
     const vehicle_id = ""; // Set default value for vehicle_id
     const rfid_id = ""; // Set default value for rfid_id
     try {
         const isUsernameTaken = await User.exists({ email: email });
-
         if (isUsernameTaken) {
             // Return an error message to the client
             res.redirect('/existsuername');
             console.log('Existing User.')
             return;
         }
-
         const user = new User({ email, password, vehicle_id, rfid_id, first_name, last_name, contact_no });
         await user.save();
-
         res.redirect('/login');
     } catch (error) {
         console.error(error);
